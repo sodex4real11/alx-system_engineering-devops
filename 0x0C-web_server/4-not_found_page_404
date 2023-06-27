@@ -1,27 +1,19 @@
 #!/usr/bin/env bash
-# sets up a new 404 error page
+# Configure Nginx server so that /redirect_me is redirecting to another page.
+# But the main domain still shows Hello world
 
-sudo apt-get update
-sudo apt-get install -y nginx 
-echo "Hello World!" > index.html
-sudo mv index.html /var/www/html
+apt-get update -y && apt-get upgrade -y
+apt-get install nginx -y
+chown -R "$USER":"$USER" /var/www/html
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
+line="\\\\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}"
+sed -i "48i $line" /etc/nginx/sites-available/default
 
+mkdir -p /var/www/default
+echo "Ceci n'est pas une page" > /var/www/default/404.html
+line1="\\\tlocation = /404.html {\n\t\t root /var/www/default;\n\t}"
+sed -i "29i $line1" /etc/nginx/sites-available/default
+line2="\\\terror_page 404 /404.html;"
+sed -i "32i $line2" /etc/nginx/sites-available/default
 
-echo "Ceci n'est pas une page" > 404.html
-sudo mv 404.html /var/www/html
-echo "server {
-   listen 80 default_server;
-   listen [::]:80 default_server;
-   
-   root /var/www/html;
-   index index.html;
-   location /redirect_me {
-      return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-   }
-   error_page 404 /404.html;
-   location = /404.html{
-      internal;
-   }
-}" > default
-sudo mv -f default /etc/nginx/sites-available/default
-sudo service nginx restart
+service nginx restart
