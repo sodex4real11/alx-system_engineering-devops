@@ -2,7 +2,7 @@
 # checking for command line arguments
 
 
-if [ "$#" -lt 3 ];
+if [ "$#" -lt 4 ];
 then
 	echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
 	exit 1
@@ -17,7 +17,7 @@ path_to_shh_key=$4
 
 # disabbling strict host key checking
 
-scp -0 "StrictHostKeyChecking=no" -i "path_to_shh_key" "$path_to_file" "$username@$ip:~/"
+scp -o "StrictHostKeyChecking=no" -i "path_to_shh_key" "$path_to_file" "$username@$ip:~/"
 
 
 # checking if the transfer was successful
